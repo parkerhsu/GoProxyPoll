@@ -2,8 +2,7 @@ package dbops
 
 import (
 	"database/sql"
-	"github.com/gomodule/redigo/redis"
-	_ "github.com/gomodule/redigo/redis"
+	_ "github.com/go-sql-driver/mysql"
 )
 
 var (
@@ -12,9 +11,8 @@ var (
 )
 
 func init() {
-	dbConn, err := redis.Dial("tcp", "127.0.0.1")
+	dbConn, err = sql.Open("mysql", "root:123456@tcp(localhost:3306)/proxypoll?charset=utf8")
 	if err != nil {
 		panic(err.Error())
 	}
-
 }
