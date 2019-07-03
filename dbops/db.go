@@ -3,6 +3,10 @@ package dbops
 import (
 	"GoProxyPoll/GoProxyPoll/defs"
 	"database/sql"
+	"errors"
+	"log"
+	"math/rand"
+	"time"
 )
 
 func AddIp(ip *defs.Ip) error {
@@ -108,10 +112,49 @@ func Random() (*defs.Ip, error) {
 	}
 	var ips []*defs.Ip
 
-	if !rows.Next() {
-
+	if columns, _ := rows.Columns(); len(columns) == 0 {
+		stmtOut, err = dbConn.Prepare(`SELECT ip, protocol FROM proxypoll`)
+		if err != nil {
+			return nil, err
+		}
+		rows, err = stmtOut.Query()
+		if err != nil {
+			return nil, err
+		}
+		if columns, _ := rows.Columns(); len(columns) == 0 {
+			err = errors.New("There is no proxy in database.")
+			return nil, err
+		}
 	}
 
+	var cnt int
+	for rows.Next() {
+		var ip, protocol string
+		if err = rows.Scan(&ip, &protocol); err != nil {
+			return nil, err
+		}
+		c := &defs.Ip{Data:ip, Type:protocol}
+		ips = append(ips, c)
+		cnt++
+	}
+	defer stmtOut.Close()
+	rand.Seed(time.Now().UnixNano())
+	log.Println(cnt)
+	num := rand.Intn(cnt)
+	return ips[num], nil
+}
+
+func AllIps() ([]*defs.Ip, error) {
+	stmtOut, err := dbConn.Prepare(`SELECT ip, protocol FROM proxypoll`)
+	if err != nil {
+		return nil, err
+	}
+
+	var ips []*defs.Ip
+	rows, err := stmtOut.Query()
+	if err != nil {
+		return nil, err
+	}
 	for rows.Next() {
 		var ip, protocol string
 		if err = rows.Scan(&ip, &protocol); err != nil {
@@ -120,5 +163,6 @@ func Random() (*defs.Ip, error) {
 		c := &defs.Ip{Data:ip, Type:protocol}
 		ips = append(ips, c)
 	}
-
+	defer stmtOut.Close()
+	return ips, nil
 }

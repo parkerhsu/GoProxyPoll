@@ -25,6 +25,9 @@ func TestAll(t *testing.T) {
 	t.Run("Count", testCount)
 	t.Run("UpdateIp", testUpdateIp)
 	t.Run("Decrease", testDecrease)
+	t.Run("AddAgain", testAddIp)
+	t.Run("Random", testRandom)
+	t.Run("AllIps", testAllIps)
 	t.Run("DeleteIp", testDeleteIp)
 }
 
@@ -85,5 +88,19 @@ func testDecrease(t *testing.T) {
 	}
 	if ok, _ := NotExist(testIp); !ok {
 		t.Errorf("Decrease failed")
+	}
+}
+
+func testRandom(t *testing.T) {
+	_, err := Random()
+	if err != nil {
+		t.Errorf("Error of Random: %v\n", err)
+	}
+}
+
+func testAllIps(t *testing.T) {
+	_, err := AllIps()
+	if err != nil {
+		t.Errorf("Error of AllIps: %v\n", err)
 	}
 }
