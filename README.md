@@ -1,10 +1,10 @@
 # GoProxyPoll
 
-### Introduction
+## Introduction
 
 GoProxyPoll is a lightweight proxy poll aiming to help you get free proxy.
 
-### Start
+## Start
 
 *   Make sure your Go version >= 1.10
 
@@ -23,7 +23,7 @@ cd GoProxyPoll
 go run main.go 
 ```
 
-### Usage
+## Usage
 
 *   Get an Ip
 
