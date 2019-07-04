@@ -1,6 +1,6 @@
 package defs
 
 type Ip struct {
-	Data string
-	Type string
+	Data string `json:"ip"`
+	Type string `json:"protocol"`
 }

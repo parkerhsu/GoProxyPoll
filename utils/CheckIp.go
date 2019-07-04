@@ -2,11 +2,12 @@ package utils
 
 import (
 	"GoProxyPoll/GoProxyPoll/defs"
+	"errors"
 	"github.com/parnurzeal/gorequest"
-	"log"
+	"time"
 )
 
-func CheckIp(ip *defs.Ip) bool {
+func CheckIp(ip *defs.Ip) (bool, error) {
 	var pollUrl string
 	var proxy string
 	if ip.Type == "HTTP" {
@@ -16,18 +17,21 @@ func CheckIp(ip *defs.Ip) bool {
 		pollUrl = "https://httpbin.org/get"
 		proxy = "https://" + ip.Data
 	} else {
-		log.Println("Wrong type")
-		return false
+		err := errors.New("Wrong protocol type")
+		return false, err
 	}
-
-	resp, _, err := gorequest.New().Proxy(proxy).Get(pollUrl).End()
+	resp, _, err := gorequest.New().
+						Proxy(proxy).
+						Get(pollUrl).
+						Timeout(time.Second*5).
+						End()
 	if err != nil {
-		log.Printf("Error when request url: %s\n", err)
-		return false
+		err2 := errors.New("Error when request url")
+		return false, err2
 	}
 	defer resp.Body.Close()
 	if resp.StatusCode == 200 {
-		return true
+		return true, nil
 	}
-	return false
+	return false, errors.New("Wrong status code.")
 }

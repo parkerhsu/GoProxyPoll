@@ -10,6 +10,10 @@ import (
 	"strings"
 )
 
+func CrawlAll() []*defs.Ip {
+	return CrawlFeiyiProxy()
+}
+
 func getDocument(url string) (doc *goquery.Document, err error) {
 	resp, err := http.Get(url)
 	if err != nil {
@@ -63,8 +67,10 @@ func CrawlFeiyiProxy() (res []*defs.Ip) {
 			type2 := s.Find("td:nth-child(4)").Text()
 			ip = strings.Replace(ip, " ", "", -1)
 			port = strings.Replace(port, " ", "", -1)
+			log.Printf("Get ip: %s\n", ip)
 			res = append(res, &defs.Ip{Data:ip+":"+port, Type:type2})
 		}
 	})
+	log.Println("CrawlFeiyiProxy Done.")
 	return
 }
